@@ -1,8 +1,8 @@
 /*
  * Timer0_Cfg.h
  *
- *  Created on: Nov 21, 2022
- *      Author: ziadg
+ *  Created on: Oct 20, 2022
+ *      Author: HanaF
  */
 
 #ifndef SOURCE_01_MCAL_03_TIMER0_INC_TIMER0_CFG_H_
