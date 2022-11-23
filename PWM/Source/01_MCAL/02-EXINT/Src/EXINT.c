@@ -1,74 +1,112 @@
 /*
  * EXINT.c
  *
- *  Created on: Nov 21, 2022
- *      Author: ziadg
+ *  Created on: Oct 23, 2022
+ *      Author: HanaF
  */
 
 #include "EXINT.h"
 
 
-void Ext_Interrupt_Enable(ext_Int_t intID)
+
+void ExtInt_vidConfigExtInt(extint_id_t intId, extint_sensectrl_t sensCtrl)
 {
-	switch (intID)
+	switch(intId)
 	{
 	case EXT_INT0:
-			SET_BIT(EXT_INT_GICR_REG,6);
-			break;
+		/*	configure sense control	*/
+		if (sensCtrl == EXT_RISING_EDGE)
+		{
+			SET_BIT(EXTINT_MCUCR_REG,0);
+			SET_BIT(EXTINT_MCUCR_REG,1);
+		}
+		else if (sensCtrl == EXT_FAILING_EDGE)
+		{
+			CLEAR_BIT(EXTINT_MCUCR_REG,0);
+			SET_BIT(EXTINT_MCUCR_REG,1);
+		}
+		else if (sensCtrl == EXT_BOTH_EDGE)
+		{
+			SET_BIT(EXTINT_MCUCR_REG,0);
+			CLEAR_BIT(EXTINT_MCUCR_REG,1);
+		}
+		else if (sensCtrl == EXT_LOW_LEVEL)
+		{
+			CLEAR_BIT(EXTINT_MCUCR_REG,0);
+			CLEAR_BIT(EXTINT_MCUCR_REG,1);
+		}
+		else
+		{
+			/*	Do Nothing	*/
+		}
+		/*	Enable Int0 Interrupt	*/
+		SET_BIT(EXTINT_GICR_REG,INT0_EN_BIT);
+		break;
 
 	case EXT_INT1:
-			SET_BIT(EXT_INT_GICR_REG,7);
-			break;
+
+		/*	configure sense control	*/
+				if (sensCtrl == EXT_RISING_EDGE)
+				{
+					SET_BIT(EXTINT_MCUCR_REG,2);
+					SET_BIT(EXTINT_MCUCR_REG,3);
+				}
+				else if (sensCtrl == EXT_FAILING_EDGE)
+				{
+					CLEAR_BIT(EXTINT_MCUCR_REG,2);
+					SET_BIT(EXTINT_MCUCR_REG,3);
+				}
+				else if (sensCtrl == EXT_BOTH_EDGE)
+				{
+					SET_BIT(EXTINT_MCUCR_REG,2);
+					CLEAR_BIT(EXTINT_MCUCR_REG,3);
+				}
+				else if (sensCtrl == EXT_LOW_LEVEL)
+				{
+					CLEAR_BIT(EXTINT_MCUCR_REG,2);
+					CLEAR_BIT(EXTINT_MCUCR_REG,3);
+				}
+				else
+				{
+					/*	Do Nothing	*/
+				}
+
+		SET_BIT(EXTINT_GICR_REG,INT1_EN_BIT);
+		break;
 
 	case EXT_INT2:
-			SET_BIT(EXT_INT_GICR_REG,5);
-			break;
+
+		if (sensCtrl == EXT_FAILING_EDGE)
+		{
+			CLEAR_BIT(EXTINT_MCUCSR_REG,6);
+		}
+		else if (sensCtrl == EXT_RISING_EDGE)
+		{
+			SET_BIT(EXTINT_MCUCSR_REG,6);
+		}
+		else
+		{
+			/*	Do Nothing	*/
+		}
+		SET_BIT(EXTINT_GICR_REG,INT2_EN_BIT);
+		break;
 	}
 }
-void Ext_Interrupt_Disable(ext_Int_t intID)
+
+void ExtInt_vidDisableExtInt(extint_id_t intId)
 {
-	switch (intID)
+	switch (intId)
 	{
 	case EXT_INT0:
-			CLEAR_BIT(EXT_INT_GICR_REG,6);
-			break;
+		SET_BIT(EXTINT_GICR_REG,INT0_EN_BIT);
+		break;
 
 	case EXT_INT1:
-			CLEAR_BIT(EXT_INT_GICR_REG,7);
-			break;
+		SET_BIT(EXTINT_GICR_REG,INT1_EN_BIT);
+		break;
 
 	case EXT_INT2:
-			CLEAR_BIT(EXT_INT_GICR_REG,5);
-			break;
-	}
-
-}
-
-void Ext_Interrupt_SncControl(ext_Int_t intID, snc_mode_t mode)
-{
-	switch (intID)
-	{
-		case EXT_INT0:
-			EXT_INT_MCUCR_REG |=(mode<<0);
-			break;
-
-		case EXT_INT1:
-			EXT_INT_MCUCR_REG |=(mode<<2);
-			break;
-
-		case EXT_INT2:
-			if (mode == FAILING_EDGE)
-			{
-				CLEAR_BIT(EXT_INT_MCUCSR_REG,6);
-			}
-			else if (mode == RISING_EDGE)
-			{
-				SET_BIT(EXT_INT_MCUCSR_REG,6);
-			}
-			else
-			{
-				/*	Do Nothing	*/
-			}
-			break;
+		SET_BIT(EXTINT_GICR_REG,INT2_EN_BIT);
+		break;
 	}
 }
